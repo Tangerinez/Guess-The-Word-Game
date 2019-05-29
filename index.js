@@ -1,15 +1,96 @@
-var Word = require("./word.js");
+var Word = require("./components/Word");
 var inquirer = require("inquirer");
-var chalk = require("chalk");
 
-var wordList = ["refrigerator", "tofu", "candy", "car", "mister"];
+var wordList = [
+  "refrigerator",
+  "tofu",
+  "candy",
+  "car",
+  "mister",
+  "nasty",
+  "basketball",
+  "immolate",
+  "crib",
+  "competition",
+  "queen",
+  "lawyer",
+  "brash",
+  "flavor",
+  "crack",
+  "top",
+  "drum",
+  "easy",
+  "hat",
+  "bitter",
+  "filthy",
+  "imbibe",
+  "breezy",
+  "book",
+  "habitual",
+  "compel",
+  "sand",
+  "petite",
+  "boot",
+  "vanish",
+  "earsplitting",
+  "science",
+  "apathetic",
+  "dispensable",
+  "hair",
+  "rat",
+  "pump",
+  "renounce",
+  "sort",
+  "earn",
+  "dashing",
+  "resist",
+  "harmony",
+  "invincible",
+  "inspire",
+  "utopian",
+  "astonishing",
+  "macho",
+  "banish",
+  "overconfident",
+  "functional",
+  "gusty",
+  "omit",
+  "leather",
+  "interesting",
+  "converse",
+  "bit",
+  "occur",
+  "breakfast",
+  "key",
+  "aboriginal",
+  "terrific",
+  "vigorous",
+  "mailbox",
+  "flee",
+  "wacky",
+  "squealing",
+  "implant",
+  "discover",
+  "breakable",
+  "uttermost",
+  "hideous",
+  "jittery",
+  "disgusted",
+  "vacuous",
+  "attraction",
+  "husky",
+  "puzzling",
+  "workable"
+];
 
 var correctWord = new Word(
-  wordList[Math.floor(Math.random() * wordsList.length)]
+  wordList[Math.floor(Math.random() * wordList.length)]
 );
 correctWord.createLetters();
 var guessesLeft = 10;
 var lettersGuessedSoFar = [];
+
+console.log("\nWelcome to Hangman CLI!");
 
 function mainGame() {
   inquirer
@@ -43,20 +124,20 @@ function mainGame() {
         return mainGame();
       }
 
-      // Only decrement guessesRemaining on an incorrect guess
-      if (!correctWord.correctWord.includes(data.guess)) {
+      // Only decrement guessesLeft on an incorrect guess
+      if (!correctWord.word.includes(data.guess)) {
         guessesLeft--;
       }
 
       lettersGuessedSoFar.push(data.guess);
 
-      for (var i = 0; i < correctWord.correctLettersArray.length; i++) {
+      for (var i = 0; i < correctWord.word.length; i++) {
         correctWord.correctLettersArray[i].checkChar(data.guess);
       }
 
       if (
         correctWord.renderLetter().toLowerCase() ==
-        correctWord.correctWord.toLowerCase()
+        correctWord.word.toLowerCase()
       ) {
         endGame("win"); // create function
         return;
@@ -69,3 +150,44 @@ function mainGame() {
       mainGame();
     });
 }
+
+function endGame(result) {
+  if (result === "win") {
+    console.log("\nYou won!");
+    console.log(
+      "You guessed " +
+        correctWord.word.toUpperCase() +
+        " with " +
+        guessesLeft +
+        " guesses remaining." +
+        "\n"
+    );
+  } else {
+    console.log("\nYou lost...");
+    console.log("The correct word was: " + correctWord.word + ".\n");
+  }
+
+  correctWord = new Word(wordList[Math.floor(Math.random() * wordList.length)]);
+  correctWord.createLetters();
+  guessesLeft = 10;
+  lettersGuessedSoFar = [];
+
+  inquirer
+    .prompt([
+      {
+        message: "Would you like to play again?",
+        name: "confirm",
+        type: "confirm"
+      }
+    ])
+    .then(function(response) {
+      if (response.confirm) {
+        console.log("\nGreat! Generating a new word...");
+        mainGame();
+      } else {
+        console.log("\nHope you see you next time!\n");
+        return;
+      }
+    });
+}
+mainGame();
